@@ -1,17 +1,33 @@
 <?php
 
-class GradeEntry{
+class GradeEntry
+{
     private $name = '';
     private $email = '';
     private $examDate = '';
     private $subject = '';
     private $grade = '';
 
-    private $errors= [];
+    private $errors = [];
 
-    public function __construct($name, $email, $examDate, $subject, $grade){
-
+    /**
+     * @param string $name
+     * @param string $email
+     * @param string $examDate
+     * @param string $subject
+     * @param string $grade
+     * @param array $errors
+     */
+    public function __construct($name, $email, $examDate, $subject, $grade, array $errors)
+    {
+        $this->name = $name;
+        $this->email = $email;
+        $this->examDate = $examDate;
+        $this->subject = $subject;
+        $this->grade = $grade;
+        $this->errors = $errors;
     }
+
 
     public static function getAll(){
         $grades = [];
@@ -39,7 +55,7 @@ class GradeEntry{
         return false;
     }
 
-    function validateName() {
+    public function validateName() {
         if (empty($this->name)) {
             $this->errors['name'] = "Name darf nicht leer sein.";
             return false;
@@ -51,7 +67,7 @@ class GradeEntry{
     }
 
 // Validierung der E-Mail-Adresse
-    function validateEmail() {
+   private function validateEmail() {
         if (!empty($this->email) && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $this->errors['email'] = "E-Mail ungültig.";
             return false;
@@ -60,7 +76,7 @@ class GradeEntry{
     }
 
 // Validierung des Prüfungsdatums
-    function validateExamDate() {
+    private function validateExamDate() {
         try {
             if (empty($this->examDate)) {
                 $this->errors['examDate'] = "Datum darf nicht leer sein.";
@@ -77,7 +93,7 @@ class GradeEntry{
     }
 
 // Validierung der Note
-    function validateGrade() {
+    private function validateGrade() {
         if (!is_numeric($this->grade) || $this->grade < 1 || $this->grade > 5) {
             $this->errors['grade'] = "Note ungültig. Die Note muss zwischen 1 und 5 liegen.";
             return false;
@@ -210,5 +226,6 @@ class GradeEntry{
 
 
 }
+
 
 ?>
