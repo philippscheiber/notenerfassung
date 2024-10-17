@@ -1,4 +1,9 @@
 <?php
+//fehlerauswertung
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 
 session_start();
 require_once "models/GradeEntry.php";
@@ -6,25 +11,25 @@ $e = new GradeEntry();
 $message = '';
 
 
-    if (isset($_POST["submit"])) {
+if (isset($_POST["submit"])) {
 
-        $e->setName(isset($_POST["name"]) ? $_POST["name"] : "");
-        $e -> setEmail( isset($_POST["email"]) ? $_POST["email"] : "");
-        $e -> setExamDate (isset($_POST["examDate"]) ? $_POST["examDate"] : "");
-        $e -> setGrade  (isset($_POST["grade"]) ? $_POST["grade"] : "");
-        $e -> setSubject(isset($_POST["subject"]) ? $_POST["subject"] : "");
+    $e->setName(isset($_POST["name"]) ? $_POST["name"] : "");
+    $e->setEmail(isset($_POST["email"]) ? $_POST["email"] : "");
+    $e->setExamDate(isset($_POST["examDate"]) ? $_POST["examDate"] : "");
+    $e->setGrade(isset($_POST["grade"]) ? $_POST["grade"] : "");
+    $e->setSubject(isset($_POST["subject"]) ? $_POST["subject"] : "");
 
-        if ($e->validate()) {
-            $e->save();
-            $message = "<p class='alert alert-success'>Die eingegebenen Daten sind in Ordnung!</p>";
-        } else {
-            $message = "<p class='alert alert-danger'><p>Die eingegebenen Daten sind fehlerhaft!</p><ul>";
-            foreach ($e ->getErrors() as $key => $value) {
-              $message .= "<li>" . $value . "</li>";
-            }
-            $message .= "</ul>";
+    if ($e->validate()) {
+        $e->save();
+        $message = "<p class='alert alert-success'>Die eingegebenen Daten sind in Ordnung!</p>";
+    } else {
+        $message = "<p class='alert alert-danger'><p>Die eingegebenen Daten sind fehlerhaft!</p><ul>";
+        foreach ($e->getErrors() as $key => $value) {
+            $message .= "<li>" . $value . "</li>";
         }
+        $message .= "</ul>";
     }
+}
 
 
 ?>
@@ -33,7 +38,8 @@ $message = '';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <title>Notenerfassung</title>
     <script type="text/javascript" src="js/index.js"></script>
 </head>
@@ -43,41 +49,49 @@ $message = '';
 
 
     <?php
-echo $message
+    echo $message
     ?>
 
     <form id="form_grade" action="index.php" method="post">
         <div class="row">
             <div class="col-sm-6 form-group">
                 <label for="name">Name*</label>
-                <input type="text" name="name" class="form-control <?= $e->hasErrors('name') ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($e->getName()) ?>" required maxlength="20">
+                <input type="text" name="name" class="form-control <?= $e->hasErrors('name') ? 'is-invalid' : '' ?>"
+                       value="<?= htmlspecialchars($e->getName()) ?>" required maxlength="20">
             </div>
 
             <div class="col-sm-6 form-group">
                 <label for="email">Email*</label>
-                <input type="email" name="email" class="form-control <?= $e->hasErrors('email') ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars(e->getName()) ?>">
+                <input type="email" name="email" class="form-control <?= $e->hasErrors('email') ? 'is-invalid' : '' ?>"
+                       value="<?= htmlspecialchars($e->getEmail()) ?>">
             </div>
         </div>
 
         <div class="row">
             <div class="col-sm-4 form-group">
                 <label for="subject">Fach*</label>
-                <select name="subject" class="custom-select <?= $e->hasErrors('subject') ? 'is-invalid' : '' ?>" required>
+                <select name="subject" class="custom-select <?= $e->hasErrors('subject') ? 'is-invalid' : '' ?>"
+                        required>
                     <option value="" hidden>- Fach auswählen -</option>
-                    <option value="m" <?php if ($e->getSubject() == 'm') echo 'selected="selected"'; ?>>Mathematik</option>
+                    <option value="m" <?php if ($e->getSubject() == 'm') echo 'selected="selected"'; ?>>Mathematik
+                    </option>
                     <option value="d" <?php if ($e->getSubject() == 'd') echo 'selected="selected"'; ?>>Deutsch</option>
-                    <option value="e" <?php if ($e->getSubject() == 'e') echo 'selected="selected"'; ?>>Englisch</option>
+                    <option value="e" <?php if ($e->getSubject() == 'e') echo 'selected="selected"'; ?>>Englisch
+                    </option>
                 </select>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="grade">Note*</label>
-                <input type="number" name="grade" class="form-control <?= $e->hasErrors('grade') ? 'is-invalid' : '' ?>" min="1" max="5" value="<?= htmlspecialchars($e->getGrade()) ?>" required>
+                <input type="number" name="grade" class="form-control <?= $e->hasErrors('grade') ? 'is-invalid' : '' ?>"
+                       min="1" max="5" value="<?= htmlspecialchars($e->getGrade()) ?>" required>
             </div>
 
             <div class="col-sm-4 form-group">
                 <label for="examDate">Prüfungsdatum*</label>
-                <input type="date" name="examDate" class="form-control <?= $e->hasErrors('examdate') ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($e->getExamDate()) ?>" required onchange="validateExamDate(this)">
+                <input type="date" name="examDate"
+                       class="form-control <?= $e->hasErrors('examdate') ? 'is-invalid' : '' ?>"
+                       value="<?= htmlspecialchars($e->getExamDate()) ?>" required onchange="validateExamDate(this)">
             </div>
         </div>
 
@@ -123,7 +137,7 @@ echo $message
 
 <form action="clear.php" method="post">
     <input type="submit" name="clear" class="btn btn-danger" value="alle daten löschen">
-    </form>
+</form>
 
 </body>
 </html>

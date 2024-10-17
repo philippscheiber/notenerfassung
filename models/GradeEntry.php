@@ -18,44 +18,48 @@ class GradeEntry
      * @param string $grade
      * @param array $errors
      */
-    public function __construct($name, $email, $examDate, $subject, $grade, array $errors)
+    public function __construct()
     {
-        $this->name = $name;
-        $this->email = $email;
-        $this->examDate = $examDate;
-        $this->subject = $subject;
-        $this->grade = $grade;
-        $this->errors = $errors;
+
     }
 
 
-    public static function getAll(){
+    public static function getAll()
+    {
         $grades = [];
-        if(isset($_SESSION['grades'])){
-            foreach($_SESSION['grades'] as $grade){
-                $grades[]= unserialize($grade);
+        if (isset($_SESSION['grades'])) {
+            foreach ($_SESSION['grades'] as $grade) {
+                $grades[] = unserialize($grade);
             }
         }
         return $grades;
     }
 
-    public static function deleteAll(){
-     if(isset($_SESSION['grades'])){
-         unset($_SESSION['grades']);
-     }
+    public static function deleteAll()
+    {
+        if (isset($_SESSION['grades'])) {
+            unset($_SESSION['grades']);
+        }
     }
 
-    public function save(){
-        if ($this->validate()){
+    public function validate()
+    {
+        return $this->validateName($this->name) & $this->validateEmail($this->email) & $this->validateExamDate($this->examDate) & $this->validateGrade($this->grade) & $this->validateSubject($this->subject);
+    }
+
+    public function save()
+    {
+        if ($this->validate()) {
             //speichern
-            $s= serialize($this);
-            $_SESSION['grades'][]= $s;
+            $s = serialize($this);
+            $_SESSION['grades'][] = $s;
             return true;
         }
         return false;
     }
 
-    public function validateName() {
+    public function validateName()
+    {
         if (empty($this->name)) {
             $this->errors['name'] = "Name darf nicht leer sein.";
             return false;
@@ -67,7 +71,8 @@ class GradeEntry
     }
 
 // Validierung der E-Mail-Adresse
-   private function validateEmail() {
+    public function validateEmail()
+    {
         if (!empty($this->email) && !filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
             $this->errors['email'] = "E-Mail ungültig.";
             return false;
@@ -76,7 +81,8 @@ class GradeEntry
     }
 
 // Validierung des Prüfungsdatums
-    private function validateExamDate() {
+    public function validateExamDate()
+    {
         try {
             if (empty($this->examDate)) {
                 $this->errors['examDate'] = "Datum darf nicht leer sein.";
@@ -93,7 +99,8 @@ class GradeEntry
     }
 
 // Validierung der Note
-    private function validateGrade() {
+    public function validateGrade()
+    {
         if (!is_numeric($this->grade) || $this->grade < 1 || $this->grade > 5) {
             $this->errors['grade'] = "Note ungültig. Die Note muss zwischen 1 und 5 liegen.";
             return false;
@@ -102,15 +109,15 @@ class GradeEntry
     }
 
 // Validierung des Fachs
-    function validateSubject() {
+    public function validateSubject()
+    {
         $validSubjects = ['m', 'd', 'e']; // Liste der gültigen Fächer
-        if (!in_array($this->subject, $this->validSubjects)) {
+        if ($this->subject != 'm' && $this->subject != 'd' && $this->subject != 'e'()) {
             $this->errors['subject'] = "Fach ungültig. Wählen Sie ein gültiges Fach.";
             return false;
         }
         return true;
     }
-
 
 
     /**
@@ -201,26 +208,32 @@ class GradeEntry
         return $this->errors;
     }
 
-    public function hasErrors($field){
+    public function hasErrors($field)
+    {
         return isset($this->errors[$field]);
     }
 
     /**
-     * @param array $this->errors
+     * @param array $this ->errors
      */
 
 
-
-    public function getExamDateFormatted(){
+    public function getExamDateFormatted()
+    {
         return date_format(date_create($this->examDate), 'd-m-Y');
     }
 
-    public function getSubjectFormatted(){
+    public function getSubjectFormatted()
+    {
         switch ($this->subject) {
-            case 'm': return "Mathematik";
-            case 'd': return "Deutsch";
-            case 'e': return "Englisch";
-            default: return null;
+            case 'm':
+                return "Mathematik";
+            case 'd':
+                return "Deutsch";
+            case 'e':
+                return "Englisch";
+            default:
+                return null;
         }
     }
 
